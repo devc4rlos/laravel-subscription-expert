@@ -18,5 +18,11 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PlanSeeder::class,
         ]);
+
+        if (app()->environment('local')) {
+            $this->call([
+                SubscriptionSeeder::class,
+            ]);
+        }
     }
 }
