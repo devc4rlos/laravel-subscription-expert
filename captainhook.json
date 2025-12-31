@@ -1,0 +1,24 @@
+{
+  "pre-commit": {
+    "enabled": true,
+    "actions": [
+      {
+        "action": "./vendor/bin/sail bin pint --test {$STAGED_FILES}",
+        "options": []
+      }
+    ]
+  },
+  "pre-push": {
+    "enabled": true,
+    "actions": [
+      {
+        "action": "./vendor/bin/sail php vendor/bin/phpstan analyse --level=9",
+        "options": []
+      },
+      {
+        "action": "./vendor/bin/sail php artisan test",
+        "options": []
+      }
+    ]
+  }
+}
