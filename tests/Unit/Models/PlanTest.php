@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Models;
 
 use App\Models\Plan;
+use App\Models\Price;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -39,5 +40,18 @@ class PlanTest extends TestCase
 
         $this->assertTrue($plan->is_active);
         $this->assertSame(7, $plan->trial_days);
+    }
+
+    public function test_it_retrieves_only_active_prices(): void
+    {
+        $plan = Plan::factory()->create();
+
+        Price::factory()->count(2)->create(['plan_id' => $plan->id, 'is_active' => true]);
+
+        Price::factory()->create(['plan_id' => $plan->id, 'is_active' => false]);
+
+        $this->assertCount(2, $plan->activePrices);
+
+        $plan->activePrices->each(fn (Price $price) => $this->assertTrue($price->is_active));
     }
 }

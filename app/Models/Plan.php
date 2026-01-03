@@ -7,6 +7,7 @@ namespace App\Models;
 use Database\Factories\PlanFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Plan extends Model
@@ -39,5 +40,17 @@ class Plan extends Model
                 $plan->slug = Str::slug($plan->name);
             }
         });
+    }
+
+    /** @return HasMany<Price, $this> */
+    public function activePrices(): HasMany
+    {
+        return $this->prices()->where('is_active', true);
+    }
+
+    /** @return HasMany<Price, $this> */
+    public function prices(): HasMany
+    {
+        return $this->hasMany(Price::class);
     }
 }
