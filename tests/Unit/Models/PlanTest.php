@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
+use App\Models\Feature;
 use App\Models\Plan;
 use App\Models\Price;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -53,5 +55,35 @@ class PlanTest extends TestCase
         $this->assertCount(2, $plan->activePrices);
 
         $plan->activePrices->each(fn (Price $price) => $this->assertTrue($price->is_active));
+    }
+
+    public function test_it_can_attach_a_feature_to_a_plan_with_value(): void
+    {
+        $plan = Plan::factory()->create();
+        $feature = Feature::factory()->create();
+        $limitValue = '10';
+
+        $plan->features()->attach($feature->id, ['value' => $limitValue]);
+
+        $this->assertDatabaseHas('plan_feature', [
+            'plan_id'    => $plan->id,
+            'feature_id' => $feature->id,
+            'value'      => $limitValue,
+        ]);
+    }
+
+    public function test_it_can_retrieve_pivot_value_attribute(): void
+    {
+        $plan = Plan::factory()->create();
+        $feature = Feature::factory()->create();
+        $plan->features()->attach($feature->id, ['value' => 'true']);
+
+        $attachedFeature = $plan->features->firstOrFail();
+
+        $pivot = $attachedFeature->getRelation('pivot');
+
+        $this->assertInstanceOf(Pivot::class, $pivot);
+
+        $this->assertEquals('true', $pivot->getAttribute('value'));
     }
 }
