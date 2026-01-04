@@ -8,6 +8,7 @@ use App\Enums\FeatureEnum;
 use Database\Factories\FeatureFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Feature extends Model
 {
@@ -23,4 +24,11 @@ class Feature extends Model
     protected $casts = [
         'code' => FeatureEnum::class,
     ];
+
+    /** @return BelongsToMany<Plan, $this> */
+    public function plan(): BelongsToMany
+    {
+        return $this->belongsToMany(Plan::class, 'plan_feature')
+            ->withPivot('value');
+    }
 }

@@ -7,6 +7,7 @@ namespace App\Models;
 use Database\Factories\PlanFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
@@ -52,5 +53,12 @@ class Plan extends Model
     public function prices(): HasMany
     {
         return $this->hasMany(Price::class);
+    }
+
+    /** @return BelongsToMany<Feature, $this> */
+    public function features(): BelongsToMany
+    {
+        return $this->belongsToMany(Feature::class, 'plan_feature')
+            ->withPivot('value');
     }
 }
